@@ -19,12 +19,17 @@ public class HoverEngine : MonoBehaviour {
 		turningSpeed = Input.GetAxis ("Horizontal") * turnSpeed;
 	}
 
+	void Accelerate () {
+		car.AddRelativeForce (new Vector3(0f, 0f, acceleration));
+	}
+
+	void Turn () { 
+		car.AddRelativeTorque (new Vector3 (0f, turningSpeed, 0f));
+	}
+
 	void FixedUpdate () {
 
-		// move forward
-		car.AddRelativeForce (new Vector3(0f, 0f, acceleration));
-
-		// allow the car to turn 
-		car.AddRelativeTorque (new Vector3 (0f, turningSpeed, 0f));
+		Accelerate ();
+		Turn ();
 	}
 }
