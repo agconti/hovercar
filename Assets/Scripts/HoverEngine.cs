@@ -12,7 +12,7 @@ public class HoverEngine : MonoBehaviour {
 	private float acceleration;
 	private float turningSpeed;
    	
-	void Start () {
+	void Awake () {
 		car = GetComponent<Rigidbody> ();
 	}	
 
