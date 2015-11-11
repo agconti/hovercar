@@ -3,14 +3,14 @@ using System.Collections;
 
 public class HoverEngine : MonoBehaviour {
 
-	public float speed;
-	public float turnSpeed;
-	public Rigidbody car;
-	public float hoverHeight = 2f;
-	public float hoverForce = 50f; 
+	[SerializeField] float speed;
+	[SerializeField] float turnSpeed;
+	[SerializeField] Rigidbody car;
+	[SerializeField] float hoverHeight = 2f;
+	[SerializeField] float hoverForce = 50f; 
 
-	private float acceleration;
-	private float turningSpeed;
+	float acceleration;
+	float turningSpeed;
    	
 	void Awake () {
 		car = GetComponent<Rigidbody> ();
