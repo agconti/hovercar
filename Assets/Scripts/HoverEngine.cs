@@ -3,16 +3,17 @@ using System.Collections;
 
 public class HoverEngine : MonoBehaviour {
 
+	[SerializeField] Rigidbody car;
 	[SerializeField] float speed;
 	[SerializeField] float turnSpeed;
-	[SerializeField] Rigidbody car;
 	[SerializeField] float hoverHeight = 2f;
 	[SerializeField] float hoverForce = 50f;
 	[SerializeField] CardboardHead userPerspective;
-	
-	float turningSpeed;
-	Quaternion currentRotation;
+
 	bool accelerating;
+	Quaternion currentRotation;
+	const float rotationSpeed = 0.1f;
+
    	
 	void Awake () {
 		car = GetComponent<Rigidbody> ();
@@ -20,25 +21,26 @@ public class HoverEngine : MonoBehaviour {
 
 	void Update () {
 		accelerating = Input.GetButton ("Fire1");
-//		acceleration = Input.GetAxis ("Vertical") * speed;
-//		turningSpeed = Input.GetAxis ("Horizontal") * turnSpeed;
 	}
 
 	void Accelerate () {
-		Debug.Log (accelerating);
 		if (accelerating) {
-			Debug.Log ("Accellerating!!");
 			car.AddRelativeForce (new Vector3(0f, 0f, speed));
 		}
-
 	}
 
 	void Turn () {
-		Quaternion currentRotation = transform.rotation;
-		Quaternion perspectiveRotation = userPerspective.transform.rotation;
-		Quaternion newRotation = Quaternion.Slerp(currentRotation, perspectiveRotation, Time.deltaTime);
+		Vector3 perspectiveRotation = userPerspective.transform.rotation.eulerAngles;
+		// scale perspective rotation from possible with domain [-90, 90] to the rotation's range of -1, 1.
+		// add result as torque to car RB
+		// y = mx + b
+		// y = (1/360)x + 0 
 
-		car.AddRelativeTorque (newRotation.eulerAngles);
+		float rotation = (1.0f / 90.0f) * perspectiveRotation.y * turnSpeed;
+		float torque = Mathf.Clamp (rotation, -1, 1);
+		Debug.LogFormat ("T: {0}, Y: {1}", torque, perspectiveRotation.y);
+			
+		car.AddTorque (new Vector3(0f, torque, 0f));
 	}
 
 	void Hover () {
