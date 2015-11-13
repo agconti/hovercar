@@ -32,7 +32,7 @@ public class HoverEngine : MonoBehaviour {
 	void Hover () {
 		Ray ray = new Ray (transform.position, -transform.up);
 		RaycastHit hit;
-		
+
 		if (Physics.Raycast(ray, out hit, hoverHeight)) {
 			float proportionalHeight = (hoverHeight - hit.distance) / hoverHeight;
 			Vector3 appliedHoverForce = Vector3.up * proportionalHeight * hoverForce;
