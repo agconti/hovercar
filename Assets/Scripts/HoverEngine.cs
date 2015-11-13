@@ -7,26 +7,38 @@ public class HoverEngine : MonoBehaviour {
 	[SerializeField] float turnSpeed;
 	[SerializeField] Rigidbody car;
 	[SerializeField] float hoverHeight = 2f;
-	[SerializeField] float hoverForce = 50f; 
-
-	float acceleration;
+	[SerializeField] float hoverForce = 50f;
+	[SerializeField] CardboardHead userPerspective;
+	
 	float turningSpeed;
+	Quaternion currentRotation;
+	bool accelerating;
    	
 	void Awake () {
 		car = GetComponent<Rigidbody> ();
 	}	
 
 	void Update () {
-		acceleration = Input.GetAxis ("Vertical") * speed;
-		turningSpeed = Input.GetAxis ("Horizontal") * turnSpeed;
+		accelerating = Input.GetButton ("Fire1");
+//		acceleration = Input.GetAxis ("Vertical") * speed;
+//		turningSpeed = Input.GetAxis ("Horizontal") * turnSpeed;
 	}
 
 	void Accelerate () {
-		car.AddRelativeForce (new Vector3(0f, 0f, acceleration));
+		Debug.Log (accelerating);
+		if (accelerating) {
+			Debug.Log ("Accellerating!!");
+			car.AddRelativeForce (new Vector3(0f, 0f, speed));
+		}
+
 	}
 
-	void Turn () { 
-		car.AddRelativeTorque (new Vector3 (0f, turningSpeed, 0f));
+	void Turn () {
+		Quaternion currentRotation = transform.rotation;
+		Quaternion perspectiveRotation = userPerspective.transform.rotation;
+		Quaternion newRotation = Quaternion.Slerp(currentRotation, perspectiveRotation, Time.deltaTime);
+
+		car.AddRelativeTorque (newRotation.eulerAngles);
 	}
 
 	void Hover () {
