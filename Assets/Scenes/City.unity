@@ -1837,7 +1837,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4867f91b6fc2a4d2191bd1cf51544657, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  car: {fileID: 846741307}
+  carRigidBody: {fileID: 0}
   speed: 60
   turnSpeed: 1000
   hoverHeight: 3

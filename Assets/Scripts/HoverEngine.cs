@@ -3,7 +3,7 @@ using System.Collections;
 
 public class HoverEngine : MonoBehaviour {
 
-	[SerializeField] Rigidbody car;
+	[SerializeField] Rigidbody carRigidBody;
 	[SerializeField] float speed;
 	[SerializeField] float turnSpeed;
 	[SerializeField] float hoverHeight = 2f;
@@ -11,12 +11,10 @@ public class HoverEngine : MonoBehaviour {
 	[SerializeField] CardboardHead userPerspective;
 
 	bool accelerating;
-	Quaternion currentRotation;
-	const float rotationSpeed = 0.1f;
 
    	
 	void Awake () {
-		car = GetComponent<Rigidbody> ();
+		carRigidBody = GetComponent<Rigidbody> ();
 	}	
 
 	void Update () {
@@ -25,22 +23,23 @@ public class HoverEngine : MonoBehaviour {
 
 	void Accelerate () {
 		if (accelerating) {
-			car.AddRelativeForce (new Vector3(0f, 0f, speed));
+			carRigidBody.AddForce (transform.forward * speed);
 		}
 	}
 
 	void Turn () {
-		Vector3 perspectiveRotation = userPerspective.transform.rotation.eulerAngles;
-		// scale perspective rotation from possible with domain [-90, 90] to the rotation's range of -1, 1.
-		// add result as torque to car RB
-		// y = mx + b
-		// y = (1/360)x + 0 
-
-		float rotation = (1.0f / 90.0f) * perspectiveRotation.y * turnSpeed;
+		/* scale perspective rotation from possible with domain of the user's 360 degree, [0, 360],
+		 * range of [ -1, 1 ] to add to the car's rigidbody as torque on its y axis .
+		 * y = mx + b
+		 * y = (1/90)x + 0 
+		 */
+		const float m = (1.0f / 360.0f);
+		float perspectiveRotationY = userPerspective.transform.rotation.eulerAngles.y;
+		float rotation = perspectiveRotationY  * m * turnSpeed;
 		float torque = Mathf.Clamp (rotation, -1, 1);
-		Debug.LogFormat ("T: {0}, Y: {1}", torque, perspectiveRotation.y);
-			
-		car.AddTorque (new Vector3(0f, torque, 0f));
+		Debug.Log (perspectiveRotationY);
+
+		carRigidBody.AddTorque (transform.up * torque, ForceMode.VelocityChange);
 	}
 
 	void Hover () {
@@ -51,7 +50,7 @@ public class HoverEngine : MonoBehaviour {
 			float proportionalHeight = (hoverHeight - hit.distance) / hoverHeight;
 			Vector3 appliedHoverForce = Vector3.up * proportionalHeight * hoverForce;
 
-			car.AddForce(appliedHoverForce, ForceMode.Acceleration);
+			carRigidBody.AddForce(appliedHoverForce, ForceMode.Acceleration);
 		}
 		
 	}
